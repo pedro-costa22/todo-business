@@ -1,16 +1,18 @@
-export class View<T> {
+export abstract class View<T> {
     protected elemento: HTMLElement;
+    private escapar: boolean = false;
 
-    constructor(seletor: string) {
+    constructor(seletor: string, escapar?: boolean) {
         this.elemento = document.querySelector(seletor);
     }
 
-    template(model: T): string {
-        throw Error('Classe filha precisa implementar o template'); 
-    }
-
-    update(model: T):void {
-        const template = this.template(model);
+    protected abstract template(model: T): string;
+        
+    public update(model: T):void {
+        let template = this.template(model);
+        if(this.escapar) {
+            template = template.replace(/<script>[\s\S]*?<\/script>/, '')
+        }
         this.elemento.innerHTML = template;
     }
 }
